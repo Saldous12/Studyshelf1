@@ -166,16 +166,7 @@ export const ACTIVITIES = [
     featured: false,
     dateAdded: "2026-08-30",
   },
-  {
-    id: "drivemad",
-    title: "Drivemad",
-    description: "Play Drivemad in the browser.",
-    thumbnail: "/thumbnails/drive-mad.png",
-    url: "/activities/drivemad/index.html",
-    tags: ["arcade", "browser", "fun"],
-    featured: false,
-    dateAdded: "2026-08-30",
-  },
+
   
   
   
@@ -433,16 +424,6 @@ export const ACTIVITIES = [
   
   
   
-  {
-    id: "Speed-Stars",
-    title: "Speed Stars",
-    description: "Play Speed Stars in the browser.",
-    thumbnail: "/thumbnails/speed-stars.png",
-    url: "/activities/Speed-Stars/index.html",
-    tags: ["arcade", "browser", "fun"],
-    featured: false,
-    dateAdded: "2026-08-30",
-  },
   
   {
     id: "stack",
@@ -455,16 +436,6 @@ export const ACTIVITIES = [
     dateAdded: "2026-08-30",
   },
   
-  {
-    id: "StickHook",
-    title: "Stick Hook",
-    description: "Play Stick Hook in the browser.",
-    thumbnail: "/thumbnails/stickman-hook.png",
-    url: "/activities/StickHook/index.html",
-    tags: ["arcade", "browser", "fun"],
-    featured: false,
-    dateAdded: "2026-08-30",
-  },
   {
     id: "stickman-hook",
     title: "Stickman Hook",
@@ -491,11 +462,11 @@ export const ACTIVITIES = [
   },
   
   {
-    id: "cookieclicker",
-    title: "Cookie Clicker",
-    description: "Play Cookie Clicker in the browser.",
-    thumbnail: "/thumbnails/Cookie-Clicker.png",
-    url: "/activities/cookieclicker/index.html",
+    id: "mario ",
+    title: "Super Mario Bros",
+    description: "Play Super Mario Bros in the browser.",
+    thumbnail: "/thumbnails/Super-Mario-Bros.png",
+    url: "/activities/mario/index.html",
     tags: ["arcade", "browser", "fun"],
     featured: false,
     dateAdded: "2026-08-30",
