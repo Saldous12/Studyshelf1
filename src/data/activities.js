@@ -481,7 +481,16 @@ export const ACTIVITIES = [
     featured: false,
     dateAdded: "2026-08-30",
   },
-  
+      {
+    id: "breakingthebank",
+    title: "Breaking the Bank",
+    description: "Play Breaking the Bank in the browser.",
+    thumbnail: "/thumbnails/Breaking-the-Bank.png",
+    url: "/activities/breakingthebank/index.html",
+    tags: ["arcade", "browser", "fun"],
+    featured: false,
+    dateAdded: "2026-08-30",
+  },
   
   
   
