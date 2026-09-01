@@ -462,7 +462,7 @@ export const ACTIVITIES = [
   },
   
   {
-    id: "mario ",
+    id: "mario",
     title: "Super Mario Bros",
     description: "Play Super Mario Bros in the browser.",
     thumbnail: "/thumbnails/Super-Mario-Bros.png",
@@ -471,7 +471,16 @@ export const ACTIVITIES = [
     featured: false,
     dateAdded: "2026-08-30",
   },
-  
+    {
+    id: "fireboywatergirl",
+    title: "Fireboy and Watergirl",
+    description: "Play Fireboy and Watergirl in the browser.",
+    thumbnail: "/thumbnails/Fireboy-Watergirl.png",
+    url: "/activities/fireboywatergirl/index.html",
+    tags: ["arcade", "browser", "fun"],
+    featured: false,
+    dateAdded: "2026-08-30",
+  },
   
   
   
