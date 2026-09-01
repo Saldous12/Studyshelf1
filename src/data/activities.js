@@ -56,16 +56,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 export const ACTIVITIES = [
-  {
-    id: "1on1soccer",
-    title: "1on1soccer",
-    description: "Play 1on1soccer in the browser.",
-    thumbnail: "/thumbnails/1on1soccer.png",
-    url: "/activities/1on1soccer/index.html",
-    tags: ["arcade", "browser", "fun"],
-    featured: false,
-    dateAdded: "2026-08-30",
-  },
+
   {
     id: "1v1lol",
     title: "1v1lol",
@@ -499,6 +490,16 @@ export const ACTIVITIES = [
     dateAdded: "2026-08-30",
   },
   
+  {
+    id: "cookieclicker",
+    title: "Cookie Clicker",
+    description: "Play Cookie Clicker in the browser.",
+    thumbnail: "/thumbnails/Cookie-Clicker.png",
+    url: "/activities/cookieclicker/index.html",
+    tags: ["arcade", "browser", "fun"],
+    featured: false,
+    dateAdded: "2026-08-30",
+  },
   
   
   
@@ -508,7 +509,7 @@ export const ACTIVITIES = [
   
   
   
-  
+
   
   
   
