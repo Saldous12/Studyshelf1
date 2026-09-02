@@ -56,34 +56,25 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 export const ACTIVITIES = [
-
-  {
-    id: "1v1lol",
-    title: "1v1lol",
-    description: "Play 1v1lol in the browser.",
-    thumbnail: "/thumbnails/1v1lol.png",
-    url: "/activities/1v1lol/index.html",
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    {
+    id: "  escape-rush2",
+    title: "Escape Road 2",
+    description: "Play Escape Rush 2 in the browser.",
+    thumbnail: "/thumbnails/ER2.png",
+    url: "/activities/escape-rush2/index.html",
     tags: ["arcade", "browser", "fun"],
     featured: false,
     dateAdded: "2026-08-30",
   },
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   
@@ -256,11 +247,11 @@ export const ACTIVITIES = [
   
   
   {
-    id: "gdlite",
-    title: "Gdlite",
-    description: "Play Gdlite in the browser.",
-    thumbnail: "/thumbnails/gdlite.png",
-    url: "/activities/gdlite/index.html",
+    id: "cookie-clicker",
+    title: "Cookie Clicker",
+    description: "Play Cookie Clicker in the browser.",
+    thumbnail: "/thumbnails/Cookie-Clicker.png",
+    url: "/activities/cookie-clicker/index.html",
     tags: ["arcade", "browser", "fun"],
     featured: false,
     dateAdded: "2026-08-30",
@@ -493,8 +484,16 @@ export const ACTIVITIES = [
   },
   
   
-  
-  
+        {
+    id: "FootballBros",
+    title: "Football Bros",
+    description: "Play Football Bros in the browser.",
+    thumbnail: "/thumbnails/fbs.png",
+    url: "/activities/FootballBros/index.html",
+    tags: ["arcade", "browser", "fun"],
+    featured: false,
+    dateAdded: "2026-08-30",
+  },
   
   
   
