@@ -12,6 +12,6 @@ async function registerSW() {
       .filter((registration) => registration.scope === oldScope)
       .map((registration) => registration.unregister())
   );
-  await navigator.serviceWorker.register("/sw.js");
+  await navigator.serviceWorker.register("/sw.js", { scope: "/" });
   await navigator.serviceWorker.ready;
 }
