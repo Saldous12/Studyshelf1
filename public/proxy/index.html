@@ -167,6 +167,7 @@
     <script src="/scram/scramjet.all.js"></script>
     <script src="/baremux/index.js"></script>
     <script src="/register-sw.js"></script>
+    <script src="/proxy/config.js"></script>
   </head>
   <body>
     <header class="browser" aria-label="Proxy browser controls">
@@ -498,7 +499,8 @@
             await scramjet.init();
             proxyFrame = scramjet.createFrame(frame);
             const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-            const wispUrl = `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`;
+            const configuredWispUrl = window.__STUDYSHELF_WISP_URL;
+            const wispUrl = configuredWispUrl || `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`;
             await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
           })();
         }
@@ -513,7 +515,10 @@
             error.textContent = "YouTube is disabled here because its video player can crash the proxy. Use another site or open YouTube separately.";
             return;
           }
-          await ensureConnection();
+          await Promise.race([
+            ensureConnection(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Proxy transport unavailable. This deployment needs a persistent Wisp WebSocket server.")), 8000)),
+          ]);
           const tab = activeTab();
           if (addToHistory) {
             tab.entries = tab.entries.slice(0, tab.index + 1);
