@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>InvisiProxy</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+        color: #f7f8ff;
+        background-color: #11172e;
+        background-image: radial-gradient(rgba(151, 165, 216, .13) 1px, transparent 1px);
+        background-size: 14px 14px;
+        transition: background-color .3s ease;
+      }
+      main { display: grid; min-height: calc(100vh - 5.2rem); place-items: center; padding: 2rem 1rem; animation: landing-in .55s cubic-bezier(.2, .8, .2, 1) both; }
+      .shell { width: min(560px, 100%); text-align: center; transform: translateY(-4vh); }
+      .brand { display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 1rem; font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; letter-spacing: -.04em; animation: rise-in .55s .08s cubic-bezier(.2, .8, .2, 1) both; }
+      .brand-mark { display: grid; width: 2.4rem; height: 2.4rem; place-items: center; color: #11172e; background: #f7f8ff; clip-path: polygon(58% 0, 100% 0, 66% 42%, 94% 42%, 28% 100%, 43% 55%, 8% 55%); }
+      .tagline { margin: 0 0 1.2rem; color: #9ca7cb; font-size: .8rem; animation: rise-in .55s .16s cubic-bezier(.2, .8, .2, 1) both; }
+      form { display: flex; width: 100%; gap: .55rem; padding: .35rem; border: 1px solid #2b355b; border-radius: .7rem; background: rgba(19, 25, 52, .9); box-shadow: 0 16px 45px rgba(0, 0, 0, .2); transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+      form:focus-within { border-color: #5965f2; box-shadow: 0 0 0 3px rgba(89, 101, 242, .13), 0 16px 45px rgba(0, 0, 0, .2); transform: translateY(-1px); }
+      input, button { border: 0; font: inherit; }
+      input { min-width: 0; flex: 1; padding: .7rem .85rem; outline: none; color: #f7f8ff; background: transparent; }
+      input::placeholder { color: #7f89aa; }
+      button { cursor: pointer; border-radius: .5rem; padding: .7rem 1rem; color: #fff; background: #5965f2; font-size: .78rem; font-weight: 700; transition: background .2s, transform .2s, opacity .2s; }
+      button:hover { background: #6975ff; transform: translateY(-1px); }
+      button:active { transform: translateY(0) scale(.97); }
+      #uv-error { min-height: 1.1rem; margin: .7rem 0 0; color: #ff9caa; font-size: .75rem; }
+      .shortcuts { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.4rem; }
+      .shortcut { display: grid; gap: .4rem; justify-items: center; color: #aab3d1; font-size: .68rem; text-decoration: none; transition: color .2s ease, transform .2s ease; }
+      .shortcut:nth-child(1) { animation: rise-in .5s .24s both; }
+      .shortcut:nth-child(2) { animation: rise-in .5s .3s both; }
+      .shortcut:nth-child(3) { animation: rise-in .5s .36s both; }
+      .shortcut:nth-child(4) { animation: rise-in .5s .42s both; }
+      .shortcut-icon { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border: 1px solid #30395f; border-radius: 50%; color: #dce1ff; background: #252d4b; font-size: .85rem; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+      .shortcut:hover { color: #fff; }
+      .shortcut:hover .shortcut-icon { border-color: #6672ff; background: #313b69; transform: translateY(-3px); }
+      .browser { display: none; position: fixed; inset: 0 0 auto; z-index: 2; height: 5.2rem; padding: .45rem .7rem .55rem; border-bottom: 1px solid #252d4b; background: rgba(13, 18, 39, .96); backdrop-filter: blur(14px); animation: chrome-in .4s ease both; }
+      .browser-inner { display: flex; min-width: 0; height: 100%; flex-direction: column; gap: .35rem; }
+      .tabs { display: flex; min-width: 0; align-items: center; gap: .35rem; }
+      .tab { display: flex; min-width: 0; max-width: 13rem; align-items: center; gap: .45rem; padding: .38rem .7rem; border: 1px solid transparent; border-radius: .45rem .45rem 0 0; color: #8d98be; background: transparent; font-size: .7rem; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+      .tab:hover { color: #dfe4ff; background: #171e3a; }
+      .tab.active { color: #f7f8ff; border-color: #2b355b; background: #1a2241; box-shadow: 0 -1px 0 #6672ff inset; }
+      .tab-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .tab-close { padding: 0 .1rem; color: #6e789d; background: transparent; font-size: .85rem; }
+      .tab-close:hover { color: #ff9caa; background: transparent; }
+      .new-tab { padding: .25rem .55rem; color: #9ca7cb; background: transparent; font-size: 1.15rem; }
+      .toolbar { display: flex; min-width: 0; align-items: center; gap: .4rem; }
+      .nav-button { width: 2rem; padding: .35rem; color: #aab3d1; background: transparent; font-size: 1rem; }
+      .nav-button:disabled { cursor: default; opacity: .35; }
+      .home-button { width: auto; padding: .4rem .65rem; color: #aab3d1; background: transparent; font-size: .72rem; }
+      .browser-form { min-width: 0; flex: 1; padding: .12rem .2rem .12rem .5rem; border-radius: .45rem; box-shadow: none; }
+      .browser-form input { padding: .42rem .55rem; font-size: .75rem; }
+      .browser-form button { padding: .4rem .7rem; }
+      .toolbar-action { width: auto; padding: .4rem .55rem; color: #aab3d1; background: transparent; font-size: .72rem; white-space: nowrap; }
+      .toolbar-action:hover, .toolbar-action.active { color: #fff; background: #252d4b; }
+      .panel { display: none; position: fixed; top: 5.55rem; right: .8rem; z-index: 4; width: min(360px, calc(100vw - 1.6rem)); max-height: min(70vh, 520px); overflow: auto; padding: 1rem; border: 1px solid #30395f; border-radius: .75rem; background: rgba(19, 25, 52, .98); box-shadow: 0 18px 50px rgba(0, 0, 0, .35); animation: panel-in .2s ease both; }
+      .panel.open { display: block; }
+      .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .8rem; color: #f7f8ff; font-size: .8rem; font-weight: 700; }
+      .panel-close { padding: .15rem .35rem; color: #8d98be; background: transparent; font-size: 1rem; }
+      .panel-empty { margin: .5rem 0; color: #7f89aa; font-size: .75rem; }
+      .bookmark-item, .shortcut-item { display: flex; min-width: 0; align-items: center; gap: .55rem; padding: .45rem; border-radius: .45rem; }
+      .bookmark-item:hover, .shortcut-item:hover { background: #252d4b; }
+      .bookmark-link { display: flex; min-width: 0; flex: 1; align-items: center; gap: .55rem; color: #dce1ff; font-size: .75rem; text-decoration: none; }
+      .bookmark-link span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .favicon { width: 1.25rem; height: 1.25rem; flex: none; border-radius: .25rem; }
+      .item-remove { padding: .2rem .35rem; color: #8d98be; background: transparent; font-size: .9rem; }
+      .item-remove:hover { color: #ff9caa; background: transparent; }
+      .manage-form { display: grid; gap: .5rem; margin-top: .8rem; }
+      .manage-form input { width: 100%; padding: .55rem .65rem; border: 1px solid #30395f; border-radius: .45rem; background: #11172e; font-size: .75rem; }
+      .manage-form button { padding: .55rem .7rem; }
+      iframe { display: none; width: 100%; height: 100vh; border: 0; background: #fff; }
+      .loading-bar { display: none; position: fixed; top: 5.2rem; left: 0; z-index: 3; width: 30%; height: 2px; background: #6672ff; box-shadow: 0 0 14px #6672ff; animation: loading 1s ease-in-out infinite alternate; }
+      @keyframes loading { from { transform: translateX(0); } to { transform: translateX(235%); } }
+      .browser { display: block; }
+      body.browsing main { display: none; }
+      body.browsing iframe { display: block; height: calc(100vh - 5.2rem); margin-top: 5.2rem; }
+      body.loading .loading-bar { display: block; }
+      @keyframes chrome-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes landing-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes panel-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      }
+      @import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+      :root {
+        --ink: #f4f7ef;
+        --muted: #8995a3;
+        --line: rgba(154, 177, 191, .2);
+        --panel: rgba(13, 21, 29, .82);
+        --panel-solid: #101a23;
+        --lime: #c4f06b;
+        --cyan: #82dcf5;
+        --coral: #ff906e;
+      }
+      body {
+        color: var(--ink);
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        background-color: #091118;
+        background-image: linear-gradient(rgba(130, 220, 245, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(130, 220, 245, .035) 1px, transparent 1px), radial-gradient(circle at 15% 10%, rgba(130, 220, 245, .1), transparent 32%), radial-gradient(circle at 85% 90%, rgba(196, 240, 107, .07), transparent 26%);
+        background-size: 44px 44px, 44px 44px, auto, auto;
+      }
+      body::before { position: fixed; inset: 0; z-index: -1; pointer-events: none; content: ""; background: linear-gradient(115deg, transparent 0 48%, rgba(255, 144, 110, .04) 48.1% 48.2%, transparent 48.3% 100%); }
+      main { min-height: 100vh; place-items: start center; padding: 15vh 1.25rem 4rem; }
+      .shell { width: min(820px, 100%); transform: none; text-align: left; }
+      .hero-kicker { display: flex; align-items: center; gap: .55rem; margin-bottom: 1.2rem; color: var(--lime); font-family: "DM Mono", monospace; font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; animation: rise-in .5s both; }
+      .hero-kicker::before { width: .45rem; height: .45rem; border-radius: 50%; background: var(--lime); box-shadow: 0 0 16px rgba(196, 240, 107, .8); content: ""; }
+      .brand { margin: 0 0 .7rem; font-size: clamp(2.75rem, 7vw, 5.8rem); font-weight: 600; letter-spacing: -.075em; line-height: .95; }
+      .brand-mark { width: 2.85rem; height: 2.85rem; color: #091118; background: var(--lime); }
+      .tagline { max-width: 34rem; margin: 0 0 2rem; color: #b2bec8; font-size: 1rem; line-height: 1.6; }
+      #uv-form { max-width: 760px; padding: .45rem; border-color: var(--line); border-radius: .9rem; background: rgba(14, 25, 34, .8); box-shadow: 0 22px 70px rgba(0, 0, 0, .28), inset 0 1px rgba(255, 255, 255, .04); }
+      #uv-form:focus-within { border-color: rgba(130, 220, 245, .7); box-shadow: 0 0 0 4px rgba(130, 220, 245, .08), 0 22px 70px rgba(0, 0, 0, .28); }
+      input { color: var(--ink); }
+      #uv-form input { padding: 1rem 1.05rem; font-size: 1rem; }
+      #uv-form button { min-width: 7rem; padding: .9rem 1.15rem; color: #091118; background: var(--lime); font-size: .78rem; letter-spacing: .02em; }
+      #uv-form button:hover { background: #d8fa8a; }
+      #uv-error { min-height: 1.1rem; margin: .7rem 0 0; color: var(--coral); font-family: "DM Mono", monospace; font-size: .68rem; }
+      .shortcuts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); justify-content: stretch; gap: .7rem; margin-top: 2.4rem; }
+      .shortcut { min-height: 7.4rem; align-content: center; justify-items: start; gap: .7rem; padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; color: #c6d0d7; background: rgba(13, 22, 30, .62); text-align: left; }
+      .shortcut:hover { border-color: rgba(196, 240, 107, .55); color: var(--ink); background: rgba(26, 42, 49, .85); transform: translateY(-4px); }
+      .shortcut-icon { width: 2.15rem; height: 2.15rem; border: 0; border-radius: .55rem; background: #263740; }
+      .shortcut:hover .shortcut-icon { border-color: transparent; background: var(--cyan); transform: none; }
+      .browser { height: 6.65rem; padding: .6rem .85rem .7rem; border-bottom-color: var(--line); background: rgba(7, 14, 20, .92); box-shadow: 0 12px 36px rgba(0, 0, 0, .2); }
+      .browser-inner { gap: .55rem; }
+      .tabs { gap: .45rem; }
+      .tab { max-width: 16rem; padding: .5rem .8rem; border-radius: .55rem .55rem 0 0; color: #74818d; background: rgba(255, 255, 255, .02); }
+      .tab.active { border-color: var(--line); background: #15232c; box-shadow: 0 -2px 0 var(--lime) inset; color: var(--ink); }
+      .new-tab { color: var(--lime); }
+      .toolbar { gap: .5rem; }
+      .nav-button, .home-button, .toolbar-action { color: #9eabb5; }
+      .home-button { color: var(--lime); }
+      .browser-form { border-color: var(--line); background: rgba(15, 26, 34, .9); }
+      .browser-form:focus-within { border-color: rgba(130, 220, 245, .55); box-shadow: 0 0 0 3px rgba(130, 220, 245, .08); }
+      .browser-form button { color: #091118; background: var(--cyan); }
+      .toolbar-action:hover, .toolbar-action.active { color: var(--ink); background: #20323b; }
+      .panel { top: 7rem; right: .85rem; border-color: var(--line); border-radius: .8rem; background: rgba(13, 25, 33, .97); box-shadow: 0 24px 70px rgba(0, 0, 0, .42); }
+      .panel-header { font-family: "DM Mono", monospace; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+      .bookmark-item:hover, .shortcut-item:hover { background: #20323b; }
+      .manage-form input { border-color: var(--line); background: #0b151c; }
+      .manage-form button { color: #091118; background: var(--lime); }
+      iframe { background: #fff; }
+      .loading-bar { top: 6.65rem; background: var(--lime); box-shadow: 0 0 16px var(--lime); }
+      body.browsing iframe { height: calc(100vh - 6.65rem); margin-top: 6.65rem; }
+      @media (max-width: 760px) {
+        main { padding-top: 8vh; }
+        .brand { font-size: clamp(2.7rem, 15vw, 4.8rem); }
+        .tagline { margin-bottom: 1.35rem; font-size: .9rem; }
+        .shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin-top: 1.6rem; }
+        .shortcut { min-height: 5.8rem; padding: .75rem; }
+        .shortcut:last-child { grid-column: span 2; }
+        .browser { height: 8.9rem; }
+        .toolbar { flex-wrap: wrap; }
+        .browser-form { order: 5; flex-basis: 100%; }
+        .browser-form input { font-size: .7rem; }
+        .toolbar-action { font-size: .65rem; }
+        .panel { top: 9.2rem; }
+        .loading-bar { top: 8.9rem; }
+        body.browsing iframe { height: calc(100vh - 8.9rem); margin-top: 8.9rem; }
+      }
+    </style>
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="/register-sw.js"></script>
+  </head>
+  <body>
+    <header class="browser" aria-label="Proxy browser controls">
+      <div class="browser-inner">
+        <div class="tabs">
+          <div id="tabs" class="tabs" role="tablist"></div>
+          <button id="new-tab" class="new-tab" type="button" aria-label="New tab" title="New tab">+</button>
+        </div>
+        <div class="toolbar">
+          <button id="home" class="home-button" type="button" aria-label="Return to StudyShelf" title="Return to StudyShelf">&#8962; StudyShelf</button>
+          <button id="back" class="nav-button" type="button" aria-label="Back" title="Back">&#8249;</button>
+          <button id="forward" class="nav-button" type="button" aria-label="Forward" title="Forward">&#8250;</button>
+          <form id="uv-browser-form" class="browser-form">
+            <input id="uv-browser-address" autocomplete="url" placeholder="Search or enter a URL" required />
+            <button type="submit">Go</button>
+          </form>
+          <button id="bookmark-current" class="toolbar-action" type="button" aria-label="Bookmark current page" title="Bookmark current page">☆</button>
+          <button id="bookmarks-toggle" class="toolbar-action" type="button" aria-label="Open bookmarks" title="Bookmarks">Bookmarks</button>
+          <button id="customize-toggle" class="toolbar-action" type="button" aria-label="Customize shortcuts" title="Customize shortcuts">Customize</button>
+        </div>
+      </div>
+    </header>
+    <section id="bookmarks-panel" class="panel" aria-label="Bookmarks">
+      <div class="panel-header"><span>Bookmarks</span><button class="panel-close" data-close-panel="bookmarks-panel" type="button" aria-label="Close bookmarks">&times;</button></div>
+      <div id="bookmark-list"></div>
+    </section>
+    <section id="customize-panel" class="panel" aria-label="Customize shortcuts">
+      <div class="panel-header"><span>Customize shortcuts</span><button class="panel-close" data-close-panel="customize-panel" type="button" aria-label="Close shortcut settings">&times;</button></div>
+      <div id="shortcut-list"></div>
+      <form id="shortcut-form" class="manage-form">
+        <input id="shortcut-name" placeholder="Site name" required />
+        <input id="shortcut-url" type="url" placeholder="https://example.com" required />
+        <input id="shortcut-icon" type="url" placeholder="Icon URL (optional)" />
+        <button type="submit">Add shortcut</button>
+      </form>
+    </section>
+    <main>
+      <section class="shell">
+        <div class="hero-kicker">Private web session / ready</div>
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>InvisiProxy</span></div>
+        <p class="tagline">A quieter way onto the web. Search, open, and move between sites inside one focused browser session.</p>
+        <form id="uv-form">
+          <input id="uv-address" autocomplete="url" placeholder="Search the web or enter a URL" required />
+          <button type="submit">Go</button>
+        </form>
+        <p id="uv-error"></p>
+        <div id="shortcuts" class="shortcuts" aria-label="Shortcuts"></div>
+      </section>
+    </main>
+    <div class="loading-bar" aria-hidden="true"></div>
+    <iframe id="uv-frame" title="Proxied website" allow="fullscreen; autoplay; gamepad; microphone; camera; clipboard-read; clipboard-write; accelerometer; gyroscope; web-share; display-capture"></iframe>
+    <script>
+      const form = document.getElementById("uv-form");
+      const address = document.getElementById("uv-address");
+      const browserForm = document.getElementById("uv-browser-form");
+      const browserAddress = document.getElementById("uv-browser-address");
+      const error = document.getElementById("uv-error");
+      const frame = document.getElementById("uv-frame");
+      const shortcutsElement = document.getElementById("shortcuts");
+      const tabsElement = document.getElementById("tabs");
+      const backButton = document.getElementById("back");
+      const forwardButton = document.getElementById("forward");
+      const newTabButton = document.getElementById("new-tab");
+      const homeButton = document.getElementById("home");
+      const bookmarkCurrentButton = document.getElementById("bookmark-current");
+      const bookmarksToggle = document.getElementById("bookmarks-toggle");
+      const customizeToggle = document.getElementById("customize-toggle");
+      const bookmarksPanel = document.getElementById("bookmarks-panel");
+      const customizePanel = document.getElementById("customize-panel");
+      const bookmarkList = document.getElementById("bookmark-list");
+      const shortcutList = document.getElementById("shortcut-list");
+      const shortcutForm = document.getElementById("shortcut-form");
+      const shortcutName = document.getElementById("shortcut-name");
+      const shortcutUrl = document.getElementById("shortcut-url");
+      const shortcutIcon = document.getElementById("shortcut-icon");
+      const shortcutStorageKey = "invisiproxy-shortcuts";
+      const bookmarkStorageKey = "invisiproxy-bookmarks";
+      const defaultShortcuts = [
+        { name: "Google", url: "https://www.google.com" },
+        { name: "YouTube", url: "https://www.youtube.com" },
+        { name: "Discord", url: "https://discord.com" },
+        { name: "GitHub", url: "https://github.com" },
+        { name: "Spotify", url: "https://open.spotify.com" },
+      ];
+      let shortcuts = loadStored(shortcutStorageKey, defaultShortcuts);
+      let bookmarks = loadStored(bookmarkStorageKey, []);
+      let nextTabId = 1;
+      let activeTabId = 1;
+      let tabs = [{ id: 1, title: "New Tab", entries: [], index: -1 }];
+      const { ScramjetController } = $scramjetLoadController();
+      let connectionPromise;
+      let scramjet;
+      let proxyFrame;
+
+      function loadStored(key, fallback) {
+        try {
+          const stored = JSON.parse(localStorage.getItem(key));
+          return Array.isArray(stored) ? stored : fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function saveStored(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      function faviconUrl(url) {
+        return `/proxy/favicon/${encodeURIComponent(new URL(url).hostname)}`;
+      }
+
+      function search(input) {
+        try {
+          const url = new URL(input);
+          if (url.hostname === "www.youtube.com" || url.hostname === "youtube.com") {
+            url.hostname = "m.youtube.com";
+          }
+          return url.toString();
+        } catch {}
+        try {
+          const url = new URL(`http://${input}`);
+          if (url.hostname.includes(".")) return url.toString();
+        } catch {}
+        return `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
+      }
+
+      function youtubeEmbedUrl(url) {
+        const parsed = new URL(url);
+        if (!/(^|\.)youtube\.com$/.test(parsed.hostname) || parsed.pathname !== "/watch") return null;
+        const videoId = parsed.searchParams.get("v");
+        if (!videoId || !/^[\w-]{6,}$/.test(videoId)) return null;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&playsinline=1`;
+      }
+
+      function isBlockedYoutubeUrl(url) {
+        const hostname = new URL(url).hostname;
+        return hostname === "youtube.com" || hostname.endsWith(".youtube.com") || hostname === "youtu.be";
+      }
+
+      function activeTab() {
+        return tabs.find((tab) => tab.id === activeTabId);
+      }
+
+      function renderShortcuts() {
+        shortcutsElement.replaceChildren();
+        shortcuts.forEach((shortcut, index) => {
+          const link = document.createElement("a");
+          link.className = "shortcut";
+          link.href = shortcut.url;
+          link.title = shortcut.name;
+          link.style.animationDelay = `${.24 + index * .06}s`;
+          const icon = document.createElement("img");
+          icon.className = "shortcut-icon";
+          icon.src = shortcut.icon || faviconUrl(shortcut.url);
+          icon.alt = "";
+          const label = document.createElement("span");
+          label.textContent = shortcut.name;
+          link.append(icon, label);
+          link.addEventListener("click", (event) => {
+            event.preventDefault();
+            address.value = shortcut.url;
+            navigateTo(shortcut.url);
+          });
+          shortcutsElement.append(link);
+        });
+      }
+
+      function renderShortcutManager() {
+        shortcutList.replaceChildren();
+        shortcuts.forEach((shortcut, index) => {
+          const row = document.createElement("div");
+          row.className = "shortcut-item";
+          const icon = document.createElement("img");
+          icon.className = "favicon";
+          icon.src = shortcut.icon || faviconUrl(shortcut.url);
+          icon.alt = "";
+          const label = document.createElement("span");
+          label.textContent = shortcut.name;
+          label.style.flex = "1";
+          label.style.fontSize = ".75rem";
+          const remove = document.createElement("button");
+          remove.className = "item-remove";
+          remove.type = "button";
+          remove.textContent = "×";
+          remove.title = `Remove ${shortcut.name}`;
+          remove.addEventListener("click", () => {
+            shortcuts.splice(index, 1);
+            saveStored(shortcutStorageKey, shortcuts);
+            renderShortcuts();
+            renderShortcutManager();
+          });
+          row.append(icon, label, remove);
+          shortcutList.append(row);
+        });
+      }
+
+      function renderBookmarks() {
+        bookmarkList.replaceChildren();
+        if (!bookmarks.length) {
+          const empty = document.createElement("p");
+          empty.className = "panel-empty";
+          empty.textContent = "Pages you save will appear here.";
+          bookmarkList.append(empty);
+          return;
+        }
+        bookmarks.forEach((bookmark, index) => {
+          const row = document.createElement("div");
+          row.className = "bookmark-item";
+          const link = document.createElement("a");
+          link.className = "bookmark-link";
+          link.href = bookmark.url;
+          const icon = document.createElement("img");
+          icon.className = "favicon";
+          icon.src = faviconUrl(bookmark.url);
+          icon.alt = "";
+          const label = document.createElement("span");
+          label.textContent = bookmark.title;
+          link.append(icon, label);
+          link.addEventListener("click", (event) => {
+            event.preventDefault();
+            navigateTo(bookmark.url);
+            bookmarksPanel.classList.remove("open");
+          });
+          const remove = document.createElement("button");
+          remove.className = "item-remove";
+          remove.type = "button";
+          remove.textContent = "×";
+          remove.title = "Remove bookmark";
+          remove.addEventListener("click", () => {
+            bookmarks.splice(index, 1);
+            saveStored(bookmarkStorageKey, bookmarks);
+            renderBookmarks();
+          });
+          row.append(link, remove);
+          bookmarkList.append(row);
+        });
+      }
+
+      function renderTabs() {
+        tabsElement.innerHTML = tabs.map((tab) => `
+          <div class="tab ${tab.id === activeTabId ? "active" : ""}" data-tab-id="${tab.id}" role="tab" aria-selected="${tab.id === activeTabId}">
+            <span class="tab-label">${tab.title}</span>
+            <button class="tab-close" type="button" data-close-id="${tab.id}" aria-label="Close ${tab.title}" title="Close tab">&times;</button>
+          </div>
+        `).join("");
+        tabsElement.querySelectorAll(".tab").forEach((tabElement) => {
+          tabElement.addEventListener("click", () => switchTab(Number(tabElement.dataset.tabId)));
+        });
+        tabsElement.querySelectorAll(".tab-close").forEach((closeButton) => {
+          closeButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            closeTab(Number(closeButton.dataset.closeId));
+          });
+        });
+      }
+
+      function updateNavigation() {
+        const tab = activeTab();
+        backButton.disabled = !tab || tab.index <= 0;
+        forwardButton.disabled = !tab || tab.index >= tab.entries.length - 1;
+      }
+
+      async function repairScramjetDatabase() {
+        const databases = await indexedDB.databases();
+        if (!databases.some((database) => database.name === "$scramjet")) return;
+        const database = await new Promise((resolve, reject) => {
+          const request = indexedDB.open("$scramjet");
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        const requiredStores = ["config", "cookies", "redirectTrackers", "referrerPolicies", "publicSuffixList"];
+        const isValid = requiredStores.every((store) => database.objectStoreNames.contains(store));
+        database.close();
+        if (isValid) return;
+        await new Promise((resolve, reject) => {
+          const request = indexedDB.deleteDatabase("$scramjet");
+          request.onsuccess = resolve;
+          request.onerror = () => reject(request.error);
+          request.onblocked = () => reject(new Error("The Scramjet database is still in use."));
+        });
+      }
+
+      async function initializeScramjetDatabase() {
+        await new Promise((resolve, reject) => {
+          const request = indexedDB.open("$scramjet", 1);
+          request.onupgradeneeded = () => {
+            const database = request.result;
+            ["config", "cookies", "redirectTrackers", "referrerPolicies", "publicSuffixList"].forEach((store) => {
+              if (!database.objectStoreNames.contains(store)) database.createObjectStore(store);
+            });
+          };
+          request.onsuccess = () => {
+            request.result.close();
+            resolve();
+          };
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function showCurrentEntry() {
+        const tab = activeTab();
+        if (!tab || tab.index < 0) return;
+        const url = tab.entries[tab.index];
+        browserAddress.value = url;
+        const embedUrl = youtubeEmbedUrl(url);
+        if (embedUrl) {
+          frame.src = embedUrl;
+        } else {
+          proxyFrame.go(url);
+        }
+        document.body.classList.add("browsing");
+        document.body.classList.add("loading");
+        updateNavigation();
+      }
+
+      async function ensureConnection() {
+        if (!connectionPromise) {
+          connectionPromise = (async () => {
+            await repairScramjetDatabase();
+            await initializeScramjetDatabase();
+            await registerSW();
+            scramjet = new ScramjetController({
+              files: {
+                wasm: "/scram/scramjet.wasm.wasm",
+                all: "/scram/scramjet.all.js",
+                sync: "/scram/scramjet.sync.js",
+              },
+            });
+            await scramjet.init();
+            proxyFrame = scramjet.createFrame(frame);
+            const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+            const wispUrl = `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`;
+            await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+          })();
+        }
+        return connectionPromise;
+      }
+
+      async function navigateTo(input, addToHistory = true) {
+        error.textContent = "";
+        try {
+          const url = search(input);
+          if (isBlockedYoutubeUrl(url)) {
+            error.textContent = "YouTube is disabled here because its video player can crash the proxy. Use another site or open YouTube separately.";
+            return;
+          }
+          await ensureConnection();
+          const tab = activeTab();
+          if (addToHistory) {
+            tab.entries = tab.entries.slice(0, tab.index + 1);
+            tab.entries.push(url);
+            tab.index = tab.entries.length - 1;
+            tab.title = new URL(url).hostname.replace(/^www\./, "");
+          }
+          renderTabs();
+          showCurrentEntry();
+        } catch (err) {
+          error.textContent = err.message || String(err);
+        }
+      }
+
+      function switchTab(tabId) {
+        activeTabId = tabId;
+        const tab = activeTab();
+        renderTabs();
+        if (tab.entries.length) showCurrentEntry();
+        else document.body.classList.remove("browsing");
+        updateNavigation();
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        navigateTo(address.value);
+      });
+
+      browserForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        navigateTo(browserAddress.value);
+      });
+
+      backButton.addEventListener("click", () => {
+        const tab = activeTab();
+        if (tab.index > 0) {
+          tab.index -= 1;
+          showCurrentEntry();
+        }
+      });
+
+      forwardButton.addEventListener("click", () => {
+        const tab = activeTab();
+        if (tab.index < tab.entries.length - 1) {
+          tab.index += 1;
+          showCurrentEntry();
+        }
+      });
+
+      newTabButton.addEventListener("click", () => {
+        const tab = { id: ++nextTabId, title: "New Tab", entries: [], index: -1 };
+        tabs.push(tab);
+        activeTabId = tab.id;
+        document.body.classList.remove("browsing");
+        address.value = "";
+        renderTabs();
+        updateNavigation();
+      });
+
+      function closeTab(tabId) {
+        if (tabs.length === 1) {
+          tabs[0] = { id: tabs[0].id, title: "New Tab", entries: [], index: -1 };
+          document.body.classList.remove("browsing");
+          address.value = "";
+        } else {
+          const closedIndex = tabs.findIndex((tab) => tab.id === tabId);
+          tabs = tabs.filter((tab) => tab.id !== tabId);
+          if (activeTabId === tabId) activeTabId = tabs[Math.max(0, closedIndex - 1)].id;
+          const tab = activeTab();
+          if (tab.entries.length) showCurrentEntry();
+          else document.body.classList.remove("browsing");
+        }
+        renderTabs();
+        updateNavigation();
+      }
+
+      homeButton.addEventListener("click", () => {
+        window.location.href = "/";
+      });
+
+      frame.addEventListener("load", () => document.body.classList.remove("loading"));
+
+      bookmarkCurrentButton.addEventListener("click", () => {
+        const tab = activeTab();
+        const url = tab?.entries[tab.index];
+        if (!url) return;
+        if (!bookmarks.some((bookmark) => bookmark.url === url)) {
+          bookmarks.unshift({ title: tab.title, url });
+          saveStored(bookmarkStorageKey, bookmarks);
+          renderBookmarks();
+        }
+        bookmarkCurrentButton.textContent = "Saved";
+        setTimeout(() => { bookmarkCurrentButton.textContent = "☆"; }, 1200);
+      });
+
+      function togglePanel(panel, button) {
+        const shouldOpen = !panel.classList.contains("open");
+        document.querySelectorAll(".panel").forEach((item) => item.classList.remove("open"));
+        document.querySelectorAll(".toolbar-action").forEach((item) => item.classList.remove("active"));
+        if (shouldOpen) {
+          panel.classList.add("open");
+          button.classList.add("active");
+        }
+      }
+
+      bookmarksToggle.addEventListener("click", () => togglePanel(bookmarksPanel, bookmarksToggle));
+      customizeToggle.addEventListener("click", () => togglePanel(customizePanel, customizeToggle));
+      document.querySelectorAll("[data-close-panel]").forEach((button) => {
+        button.addEventListener("click", () => document.getElementById(button.dataset.closePanel).classList.remove("open"));
+      });
+
+      shortcutForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const url = new URL(shortcutUrl.value).toString();
+        shortcuts.push({
+          name: shortcutName.value.trim(),
+          url,
+          icon: shortcutIcon.value.trim() || undefined,
+        });
+        saveStored(shortcutStorageKey, shortcuts);
+        renderShortcuts();
+        renderShortcutManager();
+        shortcutForm.reset();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "l" && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault();
+          browserAddress.focus();
+          browserAddress.select();
+        }
+        if (event.key === "t" && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault();
+          newTabButton.click();
+        }
+        if (event.key === "w" && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault();
+          closeTab(activeTabId);
+        }
+        if (event.altKey && event.key === "ArrowLeft" && !backButton.disabled) backButton.click();
+        if (event.altKey && event.key === "ArrowRight" && !forwardButton.disabled) forwardButton.click();
+      });
+
+      renderShortcuts();
+      renderShortcutManager();
+      renderBookmarks();
+      renderTabs();
+      updateNavigation();
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { BookMarked, Settings, X } from "lucide-react";
 import { useHotkey } from "../../hooks/useHotkeys.js";
 
-export default function MobileDrawer({ open, onClose, links }) {
+export default function MobileDrawer({ open, onClose, links, onOpenBlank }) {
   useHotkey("Escape", onClose, { allowInInputs: true });
 
   return (
@@ -38,7 +38,17 @@ export default function MobileDrawer({ open, onClose, links }) {
         </div>
 
         <nav className="flex flex-col gap-1">
-          {links.map((link) => (
+          {links.map((link) => link.label === "Blank" ? (
+            <button
+              key={link.to}
+              type="button"
+              onClick={() => { onClose(); onOpenBlank(); }}
+              className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium text-[var(--text-secondary)] transition hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+            >
+              <link.icon size={16} />
+              {link.label}
+            </button>
+          ) : (
             <NavLink
               key={link.to}
               to={link.to}

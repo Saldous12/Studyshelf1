@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">InvisiProxy</title>
+  <desc id="desc">A browser window with a privacy shield</desc>
+  <rect width="1600" height="1000" fill="#102a43"/>
+  <rect x="180" y="180" width="1240" height="640" rx="36" fill="#f0f4f8"/>
+  <rect x="180" y="180" width="1240" height="110" rx="36" fill="#243b53"/>
+  <circle cx="250" cy="235" r="18" fill="#f04759"/>
+  <circle cx="310" cy="235" r="18" fill="#f6c344"/>
+  <circle cx="370" cy="235" r="18" fill="#35b779"/>
+  <path d="M800 370l180 70v150c0 115-78 190-180 230-102-40-180-115-180-230V440z" fill="#2f80ed"/>
+  <path d="M800 430l105 42v113c0 62-41 110-105 140-64-30-105-78-105-140V472z" fill="#102a43"/>
+  <path d="M735 575l45 45 90-100" fill="none" stroke="#f0f4f8" stroke-linecap="round" stroke-linejoin="round" stroke-width="28"/>
+</svg>

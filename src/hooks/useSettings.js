@@ -3,6 +3,8 @@ import { useLocalStorage } from "./useLocalStorage.js";
 
 export const DEFAULT_SETTINGS = {
   appearance: "dark", // "dark" | "light" | "system"
+  accent: "mint",
+  backgroundStyle: "aurora",
   animations: true,
   compactCards: false,
   confirmBeforeLeaving: false,
@@ -49,6 +51,12 @@ export function useSettings() {
   useEffect(() => {
     document.documentElement.classList.toggle("no-animations", !settings.animations);
   }, [settings.animations]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.accent = settings.accent || DEFAULT_SETTINGS.accent;
+    root.dataset.background = settings.backgroundStyle || DEFAULT_SETTINGS.backgroundStyle;
+  }, [settings.accent, settings.backgroundStyle]);
 
   return { settings, updateSetting, resetSettings, setSettings };
 }

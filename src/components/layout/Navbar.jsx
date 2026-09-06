@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { BookMarked, Menu, Search, Settings } from "lucide-react";
+import { BookMarked, FileCode2, Globe2, Menu, Search, Settings } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle.jsx";
 import Tooltip from "../ui/Tooltip.jsx";
 import MobileDrawer from "./MobileDrawer.jsx";
@@ -10,10 +10,28 @@ const NAV_LINKS = [
   { to: "/discover", label: "Discover" },
   { to: "/favorites", label: "Favorites" },
   { to: "/recent", label: "Recent" },
+  { to: "/proxy", label: "Proxy", icon: Globe2 },
+  { to: "/about:blank", label: "Blank", icon: FileCode2 },
 ];
 
 export default function Navbar({ onOpenSearch }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  function openAboutBlank() {
+    const blankWindow = window.open("about:blank", "_blank");
+    if (!blankWindow) {
+      window.location.href = "/about:blank";
+      return;
+    }
+    blankWindow.document.title = "StudyShelf";
+    blankWindow.document.body.style.cssText = "margin:0;overflow:hidden;background:#081219";
+    const frame = blankWindow.document.createElement("iframe");
+    frame.src = `${window.location.origin}/`;
+    frame.title = "StudyShelf in about:blank";
+    frame.allow = "fullscreen; autoplay; clipboard-read; clipboard-write";
+    frame.style.cssText = "display:block;width:100vw;height:100vh;border:0";
+    blankWindow.document.body.append(frame);
+  }
 
   return (
     <>
@@ -35,7 +53,17 @@ export default function Navbar({ onOpenSearch }) {
           </NavLink>
 
           <nav className="hidden flex-1 items-center gap-1 lg:flex">
-            {NAV_LINKS.map((link) => (
+            {NAV_LINKS.map((link) => link.label === "Blank" ? (
+              <button
+                key={link.to}
+                type="button"
+                onClick={openAboutBlank}
+                className="rounded-lg px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-150 hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+              >
+                <link.icon size={15} />
+                {link.label}
+              </button>
+            ) : (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -48,6 +76,7 @@ export default function Navbar({ onOpenSearch }) {
                   }`
                 }
               >
+                {link.icon && <link.icon size={15} />}
                 {link.label}
               </NavLink>
             ))}
@@ -78,7 +107,7 @@ export default function Navbar({ onOpenSearch }) {
         </div>
       </header>
 
-      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} links={NAV_LINKS} />
+      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} links={NAV_LINKS} onOpenBlank={openAboutBlank} />
     </>
   );
 }

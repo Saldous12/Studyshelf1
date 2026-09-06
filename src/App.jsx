@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar.jsx";
 import ToastContainer from "./components/ui/ToastContainer.jsx";
 import SearchModal from "./components/search/SearchModal.jsx";
@@ -12,6 +12,8 @@ const Discover = lazy(() => import("./pages/Discover.jsx"));
 const Favorites = lazy(() => import("./pages/Favorites.jsx"));
 const Recent = lazy(() => import("./pages/Recent.jsx"));
 const ActivityPage = lazy(() => import("./pages/ActivityPage.jsx"));
+const ProxyPage = lazy(() => import("./pages/ProxyPage.jsx"));
+const AboutBlank = lazy(() => import("./pages/AboutBlank.jsx"));
 const Settings = lazy(() => import("./pages/Settings.jsx"));
 const NotFound = lazy(() => import("./pages/NotFound.jsx"));
 
@@ -32,6 +34,7 @@ export default function App() {
   const location = useLocation();
 
   const openSearch = useCallback(() => setSearchOpen(true), []);
+  const isProxyRoute = location.pathname === "/proxy";
 
   useHotkey("/", () => setSearchOpen(true));
   useHotkey("mod+k", () => setSearchOpen(true));
@@ -39,15 +42,25 @@ export default function App() {
 
   return (
     <div className="app-shell-bg min-h-screen">
-      <Navbar onOpenSearch={openSearch} />
+      {!isProxyRoute && <Navbar onOpenSearch={openSearch} />}
 
-      <main key={location.pathname} className="mx-auto max-w-[1400px] px-4 pb-24 pt-8 animate-fade-in sm:px-6 lg:px-8">
+      <main
+        key={location.pathname}
+        className={
+          isProxyRoute
+            ? "animate-fade-in"
+            : "mx-auto max-w-[1400px] px-4 pb-24 pt-8 animate-fade-in sm:px-6 lg:px-8"
+        }
+      >
         <Suspense fallback={<PageFallback />}>
           <Routes>
             <Route path="/" element={<Home onOpenSearch={openSearch} />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/recent" element={<Recent />} />
+            <Route path="/proxy" element={<ProxyPage />} />
+            <Route path="/about:blank" element={<AboutBlank />} />
+            <Route path="/activity/invisiproxy" element={<Navigate to="/proxy" replace />} />
             <Route path="/activity/:activityId" element={<ActivityPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />

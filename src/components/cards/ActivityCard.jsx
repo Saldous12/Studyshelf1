@@ -11,6 +11,7 @@ export default function ActivityCard({ activity, compact = false, lastPlayed, la
   const [popping, setPopping] = useState(false);
   const favorite = isFavorite(activity.id);
   const isNew = isNewActivity(activity);
+  const activityPath = activity.id === "invisiproxy" ? "/proxy" : `/activity/${activity.id}`;
 
   function handleFavoriteClick(e) {
     e.preventDefault();
@@ -22,7 +23,7 @@ export default function ActivityCard({ activity, compact = false, lastPlayed, la
 
   return (
     <Link
-      to={`/activity/${activity.id}`}
+      to={activityPath}
       className="group relative flex flex-col overflow-hidden rounded-2xl card-surface shadow-soft outline-none transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-elevated hover:border-[var(--border-strong)] focus-visible:-translate-y-1"
     >
       <div className={`relative overflow-hidden ${compact ? "aspect-[16/10]" : "aspect-[16/10]"} bg-[var(--bg-elevated)]`}>

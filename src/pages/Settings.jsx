@@ -1,4 +1,4 @@
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Check, Monitor, Moon, Palette, Sun } from "lucide-react";
 import { useSettings, DEFAULT_SETTINGS } from "../hooks/useSettings.js";
 import { useFavorites } from "../hooks/useFavorites.js";
 import { useRecentlyPlayed } from "../hooks/useRecentlyPlayed.js";
@@ -10,6 +10,19 @@ const APPEARANCE_OPTIONS = [
   { value: "dark", label: "Dark", icon: Moon },
   { value: "light", label: "Light", icon: Sun },
   { value: "system", label: "System", icon: Monitor },
+];
+
+const ACCENT_OPTIONS = [
+  { value: "mint", label: "Mint", color: "#a9e9ca" },
+  { value: "sky", label: "Sky", color: "#82dcf5" },
+  { value: "coral", label: "Coral", color: "#ff9b78" },
+  { value: "gold", label: "Gold", color: "#f3cf75" },
+];
+
+const BACKGROUND_OPTIONS = [
+  { value: "aurora", label: "Aurora", preview: "settings-preview-aurora" },
+  { value: "grid", label: "Grid", preview: "settings-preview-grid" },
+  { value: "plain", label: "Plain", preview: "settings-preview-plain" },
 ];
 
 export default function Settings() {
@@ -86,6 +99,45 @@ export default function Settings() {
               </button>
             );
           })}
+        </div>
+      </SettingsSection>
+
+      <SettingsSection title="Personalize" description="Shape the colors and atmosphere of your shelf.">
+        <div className="flex flex-col gap-6">
+          <div>
+            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]"><Palette size={16} /> Accent color</div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {ACCENT_OPTIONS.map((option) => {
+                const active = settings.accent === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => updateSetting("accent", option.value)}
+                    className={`flex items-center gap-2 rounded-xl border p-3 text-left text-sm transition ${active ? "border-[var(--color-brand-500)] bg-[var(--color-brand-500)]/10 text-[var(--text-primary)]" : "border-[var(--border-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"}`}
+                  >
+                    <span className="h-5 w-5 rounded-full" style={{ backgroundColor: option.color, boxShadow: `0 0 14px ${option.color}55` }} />
+                    <span>{option.label}</span>
+                    {active && <Check size={14} className="ml-auto" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <p className="mb-3 text-sm font-medium text-[var(--text-primary)]">Background style</p>
+            <div className="grid grid-cols-3 gap-2">
+              {BACKGROUND_OPTIONS.map((option) => {
+                const active = settings.backgroundStyle === option.value;
+                return (
+                  <button key={option.value} type="button" onClick={() => updateSetting("backgroundStyle", option.value)} className={`overflow-hidden rounded-xl border text-left transition ${active ? "border-[var(--color-brand-500)] ring-2 ring-[var(--color-brand-500)]/20" : "border-[var(--border-subtle)] hover:border-[var(--border-strong)]"}`}>
+                    <span className={`settings-background-preview ${option.preview}`} />
+                    <span className="block px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </SettingsSection>
 

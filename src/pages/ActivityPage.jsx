@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Clock, Expand, Gauge, Heart, TriangleAlert } from "lucide-react";
+import { ArrowLeft, Clock, Expand, ExternalLink, Gauge, Heart, TriangleAlert } from "lucide-react";
 import { useActivities } from "../hooks/useActivities.js";
 import { useFavorites } from "../hooks/useFavorites.js";
 import { useLaunchStats } from "../hooks/useLaunchStats.js";
@@ -89,7 +89,19 @@ export default function ActivityPage() {
         ref={playerWrapRef}
         className="group relative aspect-video w-full overflow-hidden rounded-3xl card-surface shadow-elevated animate-fade-up"
       >
-        {!loaded && !frameError && (
+        {activity.external ? (
+          <div className="flex h-full flex-col items-center justify-center gap-4 bg-[var(--bg-surface)] px-6 text-center">
+            <ExternalLink size={30} className="text-brand-500" />
+            <div>
+              <p className="text-sm font-medium text-[var(--text-primary)]">Open {activity.title} in a new tab</p>
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">This service does not allow cross-origin iframe embedding.</p>
+            </div>
+            <Button as="a" href={activity.url} target="_blank" rel="noreferrer">
+              <ExternalLink size={16} />
+              Open {activity.title}
+            </Button>
+          </div>
+        ) : !loaded && !frameError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--bg-surface)]">
             <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--border-strong)] border-t-brand-500" />
             <p className="text-sm text-[var(--text-tertiary)]">Loading {activity.title}…</p>

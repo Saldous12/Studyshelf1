@@ -11,7 +11,7 @@ import ActivityCard from "../components/cards/ActivityCard.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
 const SORT_OPTIONS = [
-  { value: "", label: "Curated" },
+  { value: "curated", label: "Curated" },
   { value: "az", label: "A–Z" },
   { value: "recent", label: "Recently Added" },
   { value: "played", label: "Most Played" },
@@ -26,7 +26,7 @@ export default function Discover() {
   const compact = settings.compactCards;
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const sort = searchParams.get("sort") || "";
+  const sort = searchParams.get("sort") || "az";
 
   const recentMap = useMemo(
     () => Object.fromEntries(recent.map((r) => [r.id, r.lastPlayed])),
@@ -35,13 +35,12 @@ export default function Discover() {
 
   function setSort(value) {
     const next = new URLSearchParams(searchParams);
-    if (value) next.set("sort", value);
-    else next.delete("sort");
+    next.set("sort", value);
     setSearchParams(next, { replace: true });
   }
 
-  const isSorting = Boolean(sort);
-  const flatList = useMemo(() => sortActivities(activities, sort || "az", stats), [activities, sort, stats]);
+  const isSorting = sort !== "curated";
+  const flatList = useMemo(() => sortActivities(activities, sort, stats), [activities, sort, stats]);
 
   const trending = useMemo(() => sortActivities(activities, "played", stats).slice(0, 10), [activities, stats]);
   const newActivities = useMemo(() => activities.filter((a) => isNewActivity(a)), [activities]);
@@ -55,7 +54,7 @@ export default function Discover() {
         <section className="animate-fade-up">
           <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">Discover</h1>
           <p className="mt-1.5 text-[15px] text-[var(--text-secondary)]">
-            Browse the full library, sorted however you like.
+            Browse the full library from A–Z, or choose another view.
           </p>
         </section>
         <EmptyState
@@ -73,7 +72,7 @@ export default function Discover() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">Discover</h1>
           <p className="mt-1.5 text-[15px] text-[var(--text-secondary)]">
-            Browse the full library, sorted however you like.
+            Browse the full library from A–Z, or choose another view.
           </p>
         </div>
 
